@@ -1,8 +1,6 @@
 import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 const { createSlice } = require('@reduxjs/toolkit');
-// import persistReducer from 'redux-persist/es/persistReducer';
-// import storage from 'redux-persist/lib/storage';
 
 const contactsSlice = createSlice({
   name: 'contacts',
