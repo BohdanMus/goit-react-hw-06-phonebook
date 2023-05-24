@@ -27,7 +27,7 @@ export const ContactForm = ({ onAdd }) => {
         <Field name="name" />
         <ErrorMessage name="name" component="span" />
         <label>Number</label>
-        <Field type="number" name="number" />
+        <Field type="tel" name="number" required />
         <ErrorMessage name="number" component="span" />
         <button type="submit">Add contact</button>
       </Form>

@@ -1,33 +1,27 @@
-import { useState, useEffect } from 'react';
 import { ContactForm } from './ContactForm/ContactForm';
 import { GlobalStyle } from './GlobalStyle';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
+import { getContacts, addContact, deleteContact } from 'redux/contactSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { getFilter, setFilter } from 'redux/filterSlice';
 
 export const App = () => {
-  const [contacts, setContacts] = useState(
-    () =>
-      JSON.parse(window.localStorage.getItem('contacts')) ?? [
-        { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-        { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-        { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-        { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-      ]
-  );
+  // const [contacts, setContacts] = useState(
+  //   () =>
+  //     JSON.parse(window.localStorage.getItem('contacts')) ?? [
+  //       { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+  //       { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+  //       { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+  //       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+  //     ]
+  // );
+  const contacts = useSelector(getContacts);
+  const filter = useSelector(getFilter);
 
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
 
-  const onChangeInput = e => {
-    setFilter(e.currentTarget.value);
-  };
-  const filterNew = () => {
-    const filteredContacts = contacts.filter(contact =>
-      contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
-    return filteredContacts;
-  };
-
-  const addContact = newContact => {
+  const doAddContact = newContact => {
     if (
       contacts.some(
         contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
@@ -35,27 +29,66 @@ export const App = () => {
     ) {
       alert(`${newContact.name} is already in contacts`);
     } else {
-      setContacts(prevState => [...prevState, newContact]);
+      dispatch(addContact(newContact));
     }
   };
 
-  const deleteContact = id => {
-    const deletedContactById = contacts.filter(contact => contact.id !== id);
-    setContacts(deletedContactById);
+  // const addContact = newContact => {
+  //   if (
+  //     contacts.some(
+  //       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+  //     )
+  //   ) {
+  //     alert(`${newContact.name} is already in contacts`);
+  //   } else {
+  //     setContacts(prevState => [...prevState, newContact]);
+  //   }
+  // };
+
+  const doDeleteContact = id => {
+    dispatch(deleteContact(id));
   };
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  // const deleteContact = id => {
+  //   const deletedContactById = contacts.filter(contact => contact.id !== id);
+  //   setContacts(deletedContactById);
+  // };
+
+  // const [filter, setFilter] = useState('');
+
+  const onChangeInput = e => {
+    dispatch(setFilter(e.currentTarget.value));
+  };
+
+  const filterNew = () => {
+    const filteredContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+    return filteredContacts;
+  };
+
+  // const onChangeInput = e => {
+  //   setFilter(e.currentTarget.value);
+  // };
+  // const filterNew = () => {
+  //   const filteredContacts = contacts.filter(contact =>
+  //     contact.name.toLowerCase().includes(filter.toLowerCase())
+  //   );
+  //   return filteredContacts;
+  // };
+
+  // useEffect(() => {
+  //   localStorage.setItem('contacts', JSON.stringify(contacts));
+  // }, [contacts]);
 
   return (
     <div>
       <GlobalStyle />
       <h1>Phonebook</h1>
-      <ContactForm onAdd={addContact} />
+      <ContactForm onAdd={doAddContact} />
       <h2>Contacts</h2>
       <Filter filter={filter} onChangeInput={onChangeInput} />
-      <ContactList contacts={filterNew()} onDelete={deleteContact} />
+      <ContactList contacts={filterNew()} onDelete={doDeleteContact} />
     </div>
   );
 };
